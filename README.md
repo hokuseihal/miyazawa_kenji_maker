@@ -1,5 +1,8 @@
-# prob
-17 12:38:25
-17 12:38:25
-17 12:44:37
-17 13:03:00
+#2018 project research 
+1. parse xml file and get texts
+2. make model with keras 
+- input: text and part of speech by mecab
+  -  Is it possible to use word2vec space instead of making one-hot-vector by myself?
+- output: sentences like original sentence
+
+12/17 making parsexml program
