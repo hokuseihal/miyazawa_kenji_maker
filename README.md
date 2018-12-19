@@ -6,3 +6,5 @@
 - output: sentences like original sentence
 
 12/17 making parsexml program
+
+12/19 making parts program
