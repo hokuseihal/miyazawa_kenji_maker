@@ -6,10 +6,11 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.optimizers import RMSprop
-from gensim.models import word2vec_corpusfile
 from gensim.models import  word2vec
 import numpy as np
 import io
+import os
+from  w2v import makex2vmodel
 class vocab:
     def __init__(self,dicti):
         self.max_length=40
@@ -27,10 +28,7 @@ class vocab:
         self.model.add(Dense(len(self.vocabs),activation='softmax'))
         self.model.compile(self.optimizer,loss='categorical_crossentropy')
 
-        if os.path.exists(self.w2vbinpath):
-            self.w2v_model=KeyedVectors.load_word2vec_format(self.w2vbinpath,binary=True)
-        else:
-
+        
 
     def fit(self):
         pass

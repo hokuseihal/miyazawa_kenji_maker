@@ -28,7 +28,7 @@ class part:
         if  os.path.exists(self.weightpath) :
             self.model.load_weights(self.weightpath)
         else:
-            self.partfit()
+            self.partfit(dicti)
 
 
     def partfit(self,dicti):
