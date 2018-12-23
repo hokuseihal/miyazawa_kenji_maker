@@ -10,11 +10,11 @@ import os
 
 class part:
 
-    def __init__(self,dicti):
+    def __init__(self, flow):
         self.max_length=120
         self.step=1
         self.weightpath= 'weight_parts.h5'
-        self.part_list=[s[1] for s in dicti]
+        self.part_list=[s[1] for s in flow]
         self.parts=sorted(list(set(self.part_list)))
         self.part_indices=dict((i,p) for p,i in enumerate(self.parts))
         self.indices_part=dict((p,i) for p,i in enumerate(self.parts))
@@ -27,11 +27,13 @@ class part:
         self.model.compile(self.optimizer,loss='categorical_crossentropy')
         if  os.path.exists(self.weightpath) :
             self.model.load_weights(self.weightpath)
+            print('parts:load weight')
         else:
-            self.partfit(dicti)
+            print('parts:fitting...............')
+            self.partfit()
 
 
-    def partfit(self,dicti):
+    def partfit(self):
 
         sentenses=[]
         next_parts=[]
