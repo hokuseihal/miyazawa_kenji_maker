@@ -9,7 +9,6 @@ from keras.optimizers import RMSprop
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils.np_utils import to_categorical
-from gensim.models import word2vec
 import numpy as np
 import io
 import os
@@ -17,10 +16,10 @@ from w2v import makex2vmodel
 
 
 class vocab:
-    def __init__(self, flow_ided):
+    def __init__(self, flow_ided,table):
         self.max_length = 80
         self.weightpath = 'weight_vocabs.h5'
-        self.wordn = max(flow_ided) + 1
+        self.wordn = len(table) + 1
         self.step = 3
         self.sentences = []
         self.nextwords = []
@@ -40,9 +39,9 @@ class vocab:
             self.model.load_weights(self.weightpath)
         else:
             print('vocab:fitting.................')
-            self.fitvocab(flow_ided)
+            self.fitvocab()
 
-    def fitvocab(self, flow_ided):
+    def fitvocab(self):
         x = np.zeros((len(self.sentences), self.max_length, self.wordn), dtype=np.bool)
         y = np.zeros((len(self.sentences), self.wordn), dtype=np.bool)
         for i, sentence in enumerate(self.sentences):

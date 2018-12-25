@@ -11,8 +11,9 @@ import flow2table
 
 class part:
 
-    def __init__(self, flow):
-        self.table=table = flow2table.flow2table(flow)
+    def __init__(self, flow,table):
+        self.flow=flow
+        self.table=table
         self.max_length = 80
         self.step = 1
         self.weightpath = 'weight_parts.h5'
@@ -47,9 +48,9 @@ class part:
         y = np.zeros((len(sentenses), len(self.parts)), dtype=np.bool)
 
         for i, sentense in enumerate(sentenses):
-            for t, part in enumerate(sentense):
-                x[i, t, self.part_indices[part]] = 1
-            y[i, self.part_indices[part]] = 1
+            for t, ipart in enumerate(sentense):
+                x[i, t, self.part_indices[ipart]] = 1
+            y[i, self.part_indices[ipart]] = 1
         self.model.fit(x, y, batch_size=63, epochs=3)
         self.model.save_weights(self.weightpath)
 
@@ -57,8 +58,6 @@ class part:
         # input : id list
         # output : a part:string
         id_sentence = id_sentence[-self.max_length:]
-        tmp1=self.onehotter(id_sentence)
-        tmp2=np.argmax(self.model.predict(self.onehotter(id_sentence)))
         return self.indices_part[np.argmax(self.model.predict(self.onehotter(id_sentence)))]
 
     def onehotter(self, id_sentence):
