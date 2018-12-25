@@ -10,16 +10,16 @@ import flow2table
 import glob
 
 
-def miyazawa():
+def miyazawa(usepart=False):
     # making text and dictionary get text
     want_length = 10
     train_text=''
     run_text=''
     # only test ---------------
-    with io.open('ginga.txt') as f:
+    with io.open('divina.txt') as f:
        rawtext = f.read().lower()
     train_text += re.sub(r"<.*?>|（.*?）", "", rawtext)
-    with io.open('yodaka.txt') as f:
+    with io.open('ginga.txt') as f:
         run_text=f.read()
     # only test end----------
     '''holly book
@@ -37,7 +37,7 @@ def miyazawa():
     # get models (fit)
     print('main:getting model')
     part_model = parts.part(train_flow,table)
-    vocab_model = vocabs.vocab(train_flow_ided,table)
+    vocab_model = vocabs.vocab(train_flow_ided,table,epoch=1)
     print('main:predicting')
     # predict
     maxlength = vocab_model.max_length
@@ -46,10 +46,19 @@ def miyazawa():
     for i in range(want_length):
         partpredict = part_model.predict(sentences)
         vocabpredict = vocab_model.predict(sentences)[0]
-        for vocabidad in np.argsort(vocabpredict)[::-1]:
-            if table[vocabidad][1]==partpredict:
-                sentences.append(vocabidad)
-                break
+        if usepart:
+            for vocabidad in np.argsort(vocabpredict)[::-1]:
+                if table[vocabidad][1]==partpredict:
+                    sentences.append(vocabidad)
+                    break
+        else:
+            sentences.append(np.argmax(vocabpredict))
+            print('not use part')
+
+
+
+    for word in sentences:
+        print(table[word])
 
 
 if __name__ == '__main__':

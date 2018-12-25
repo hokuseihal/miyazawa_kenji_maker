@@ -6,18 +6,14 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.optimizers import RMSprop
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
-from keras.utils.np_utils import to_categorical
 import numpy as np
-import io
 import os
-from w2v import makex2vmodel
 
 
 class vocab:
-    def __init__(self, flow_ided,table):
+    def __init__(self, flow_ided,table,epoch=10):
         self.max_length = 80
+        self.epoch=epoch
         self.weightpath = 'weight_vocabs.h5'
         self.wordn = len(table) + 1
         self.step = 3
@@ -48,7 +44,7 @@ class vocab:
             for t, word in enumerate(sentence):
                 x[i, t, word] = True
                 y[i, self.nextwords[i]] = True
-        self.model.fit(x,y,batch_size=128, epochs=1)
+        self.model.fit(x,y,batch_size=128, epochs=self.epoch)
         self.model.save_weights(self.weightpath)
 
     def predict(self, sentenses):
