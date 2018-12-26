@@ -47,9 +47,9 @@ class part:
         y = np.zeros((len(sentenses), len(self.parts)), dtype=np.bool)
 
         for i, sentense in enumerate(sentenses):
-            for t, part in enumerate(sentense):
+            for t, _part in enumerate(sentense):
                 x[i, t, self.part_indices[part]] = 1
-            y[i, self.part_indices[part]] = 1
+            y[i, self.part_indices[_part]] = 1
         self.model.fit(x, y, batch_size=63, epochs=3)
         self.model.save_weights(self.weightpath)
 
@@ -57,8 +57,6 @@ class part:
         # input : id list
         # output : a part:string
         id_sentence = id_sentence[-self.max_length:]
-        tmp1=self.onehotter(id_sentence)
-        tmp2=np.argmax(self.model.predict(self.onehotter(id_sentence)))
         return self.indices_part[np.argmax(self.model.predict(self.onehotter(id_sentence)))]
 
     def onehotter(self, id_sentence):

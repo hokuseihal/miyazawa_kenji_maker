@@ -12,16 +12,12 @@ import vocabs
 import flow2table
 import glob
 
-
-def miyazawa():
+def miyazawa(usepart=True):
     # making text and dictionary get text
     want_length = 100
     text=''
-    # only test ---------------
-    url = 'http://bible.salterrae.net/kougo/html/genesis.html'
-
-    textpath = get_file('ginga.txt', origin=url)
-    with io.open(textpath, encoding='Shift_JIS') as f:
+    # only test --------------
+    with io.open('ginga.txt') as f:
        rawtext = f.read().lower()
     text += re.sub(r"<.*?>|（.*?）", "", rawtext)
     # only test end----------
@@ -40,7 +36,7 @@ def miyazawa():
     # get models (fit)
     print('main:getting model')
     part_model = parts.part(flow)
-    vocab_model = vocabs.vocab(flow_ided)
+    vocab_model = vocabs.vocab(flow_ided,table)
     print('main:predicting')
     # predict
     maxlength = vocab_model.max_length
@@ -48,16 +44,10 @@ def miyazawa():
     sentences = flow_ided[rand:rand + maxlength]
     for i in range(want_length):
         partpredict = part_model.predict(sentences)
-        vocabpredict = vocab_model.predict(sentences)
-        for j in range((vocabpredict.size)):
-            vocabpredictid = (np.argsort(vocabpredict)[::-1])[0][j]
-            tmp = table[vocabpredictid][1]
-            tmp2=table[vocabpredictid]
-            if table[vocabpredictid][1] == partpredict:
-                sentences.append(vocabpredictid)
-                # print console
-                print(vocabpredictid)
-
+        vocabpredict = vocab_model.predict(sentences)[0]
+        for vocabidad in np.argsort(vocabpredict)[::-1]:
+            if table[vocabidad][1]==partpredict:
+                sentences.append(vocabidad)
                 break
 
 
