@@ -11,7 +11,8 @@ import os
 
 
 class vocab:
-    def __init__(self, flow_ided,table,epoch=10):
+    def __init__(self, flow_ided,table,epoch=60):
+        self.epoch=epoch
         self.table=table
         self.max_length = 80
         self.weightpath = 'weight_vocabs.h5'
@@ -32,7 +33,7 @@ class vocab:
             self.model.load_weights(self.weightpath)
         else:
             print('vocab:fitting.................')
-            self.fitvocab(flow_ided)
+            self.fitvocab()
 
     def fitvocab(self):
         x = np.zeros((len(self.sentences), self.max_length, self.wordn), dtype=np.bool)
@@ -41,7 +42,7 @@ class vocab:
             for t, word in enumerate(sentence):
                 x[i, t, word] = True
                 y[i, self.nextwords[i]] = True
-        self.model.fit(x,y,batch_size=128, epochs=60)
+        self.model.fit(x,y,batch_size=128, epochs=self.epoch)
         self.model.save_weights(self.weightpath)
 
     def predict(self, sentenses):
