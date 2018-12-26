@@ -11,9 +11,11 @@ import flow2table
 
 class part:
 
-    def __init__(self, flow):
-        self.table=table = flow2table.flow2table(flow)
-        self.max_length = 80
+    def __init__(self,table,flow,epoch=20):
+        self.epoch=epoch
+        self.flow=flow
+        self.table = table
+        self.max_length = 20
         self.step = 1
         self.weightpath = 'weight_parts.h5'
         self.part_list = [s[1] for s in flow]
@@ -48,20 +50,52 @@ class part:
 
         for i, sentense in enumerate(sentenses):
             for t, _part in enumerate(sentense):
-                x[i, t, self.part_indices[part]] = 1
-            y[i, self.part_indices[_part]] = 1
-        self.model.fit(x, y, batch_size=63, epochs=3)
+                x[i, t, self.part_indices[_part]] = 1
+            y[i, self.part_indices[next_parts[i]]] = 1
+        self.model.fit(x, y, batch_size=63, epochs=self.epoch)
         self.model.save_weights(self.weightpath)
 
-    def predict(self, id_sentence):
+    def predict(self, id_sentence,n):
         # input : id list
         # output : a part:string
-        id_sentence = id_sentence[-self.max_length:]
-        return self.indices_part[np.argmax(self.model.predict(self.onehotter(id_sentence)))]
+        xsentence = id_sentence[-self.max_length:]
+        return self.indices_part[np.argmax(self.model.predict(self.onehotter(xsentence)))]
 
-    def onehotter(self, id_sentence):
+    def onehotter(self, xinlist_onehot):
         x = np.zeros((1, self.max_length, len(self.parts)), dtype=np.bool)
-        for t, id in enumerate(id_sentence):
+        for t, id in enumerate(xinlist_onehot):
             x[0, t, self.part_indices[self.table[id][1]]] = True
         return x
 
+    def accuracy_test(self):
+        print('accuracy_check')
+        with open('truck.txt') as f:
+            text=f.read()
+        from janome.tokenizer import Tokenizer
+        text=Tokenizer().tokenize(text)
+        part_list=[(str(str(ppart).split()[1]).split(',')[0]) for ppart in text]
+        t=0
+        l=0
+        sum=0
+        sentenses = []
+        next_parts = []
+        # cut text
+        for i in range(0, len(part_list) - self.max_length, self.step):
+            sentenses.append(part_list[i:i + self.max_length])
+            next_parts.append(part_list[i + self.max_length])
+        # Vectorization
+        x = np.zeros((len(sentenses), self.max_length, len(self.parts)), dtype=np.bool)
+        y = np.zeros((len(sentenses), len(self.parts)), dtype=np.bool)
+
+        for i, sentense in enumerate(sentenses):
+            for t, _part in enumerate(sentense):
+                x[i, t, self.part_indices[_part]] = 1
+            y[i, self.part_indices[next_parts[i]]] = 1
+        xx=self.model.predict(x)
+        for si in range(len(sentenses)):
+            if np.argmax(y[si])==np.argmax(xx[si]):
+                t+=1
+            else:
+                l+=1
+            sum+=1
+        print('accuracy:',t/sum,l/sum)
