@@ -41,7 +41,7 @@ class vocab:
             for t, word in enumerate(sentence):
                 x[i, t, word] = True
                 y[i, self.nextwords[i]] = True
-        self.model.fit(x,y,batch_size=128, epochs=1)
+        self.model.fit(x,y,batch_size=128, epochs=60)
         self.model.save_weights(self.weightpath)
 
     def predict(self, sentenses):
