@@ -1,16 +1,13 @@
 import sys
 
 from janome.tokenizer import Tokenizer
-from keras.utils.data_utils import get_file
 import numpy as np
-
 import io
 import re
 
 import parts
 import vocabs
 import flow2table
-import glob
 
 
 def miyazawa(usepart=True):
