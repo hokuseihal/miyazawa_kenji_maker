@@ -8,12 +8,14 @@ from keras.layers import LSTM
 from keras.optimizers import RMSprop
 import numpy as np
 import os
+from showhis import showhis
+from sklearn.model_selection import train_test_split
 
 
 class vocab:
-    def __init__(self, flow_ided,table,epoch=60):
-        self.epoch=epoch
-        self.table=table
+    def __init__(self, flow_ided, table, epoch=60):
+        self.epoch = epoch
+        self.table = table
         self.max_length = 80
         self.weightpath = 'weight_vocabs.h5'
         self.wordn = max(flow_ided) + 1
@@ -42,7 +44,9 @@ class vocab:
             for t, word in enumerate(sentence):
                 x[i, t, word] = True
                 y[i, self.nextwords[i]] = True
-        self.model.fit(x,y,batch_size=128, epochs=self.epoch)
+        (x_train, x_test, y_train, y_test) = train_test_split(x, y)
+        his_fit = self.model.fit(x_train, y_train, batch_size=63, epochs=self.epoch, validation_data=(x_test, y_test))
+        showhis(his_fit, title='vocabs:loss and validation_loss')
         self.model.save_weights(self.weightpath)
 
     def predict(self, sentenses):
