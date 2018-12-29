@@ -55,7 +55,7 @@ class part:
         his_fit = self.model.fit(x_train, y_train, batch_size=63, epochs=self.epoch, validation_data=(x_test, y_test))
         showhis(his_fit, title='part:loss and validation_loss')
         self.model.save_weights(self.weightpath)
-
+        self.accuracy_test()
     def predict(self, id_sentence, n):
         # input : id list
         # output : a part:string
@@ -69,9 +69,11 @@ class part:
         return x
 
     def accuracy_test(self):
+        import  re
         print('accuracy_check')
-        with open('truck.txt') as f:
+        with open('ryunosuke.txt',encoding='shift-jis') as f:
             text = f.read()
+        text=re.sub(r'《.*?》|［.*?］','',text)
         from janome.tokenizer import Tokenizer
         text = Tokenizer().tokenize(text)
         part_list = [(str(str(ppart).split()[1]).split(',')[0]) for ppart in text if

@@ -27,7 +27,7 @@ def miyazawa(usepart=True):
 
     # get models (fit)
     print('main:getting model')
-    part_model = parts.part(table, flow, epoch=20)
+    part_model = parts.part(table, flow, epoch=2)
     vocab_model = vocabs.vocab(flow_ided, table, epoch=120)
     print('main:predicting')
     # predict
@@ -43,7 +43,6 @@ def miyazawa(usepart=True):
                 print(table[vocabidad][0], end="")
                 break
 
-    part_model.accuracy_test()
 
 
 if __name__ == '__main__':
