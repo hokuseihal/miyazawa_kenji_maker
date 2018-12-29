@@ -1,9 +1,6 @@
-import sys
-
 from janome.tokenizer import Tokenizer
 import numpy as np
-import io
-import re
+import os
 
 import parts
 import vocabs
@@ -13,11 +10,18 @@ import flow2table
 def miyazawa(usepart=True):
     # making text and dictionary get text
     want_length = 100
-    text = ''
+    divided_text = ''
     # only test --------------
-    with io.open('ginga.txt') as f:
-        rawtext = f.read().lower()
-    text += re.sub(r"<.*?>|（.*?）", "", rawtext)
+    t = Tokenizer()
+    folder = 'texts'
+    files = os.listdir(folder)
+    text = ''
+    dtexts = []
+    for file in files:
+        with open(os.path.join(folder, file), encoding='shift_jis') as f:
+            text = f.read()
+        print('read: ', file)
+        divided_text+= t.tokenize(text)
     # only test end----------
 
     divided_text = Tokenizer().tokenize(text)
