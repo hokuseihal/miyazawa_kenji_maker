@@ -5,26 +5,27 @@ import os
 import parts
 import vocabs
 import flow2table
+import  re
 
 
 def miyazawa(usepart=True):
     # making text and dictionary get text
     want_length = 100
-    divided_text = ''
+    divided_text = []
     # only test --------------
     t = Tokenizer()
     folder = 'texts'
     files = os.listdir(folder)
-    text = ''
-    dtexts = []
     for file in files:
         with open(os.path.join(folder, file), encoding='shift_jis') as f:
-            text = f.read()
-        print('read: ', file)
-        divided_text+= t.tokenize(text)
+            print('read: ', file)
+            lines = f.readlines()
+            for line in lines:
+                if None!=re.match(r'\d{3}',line):
+                    divided_text+=t.tokenize(line)[2:]
     # only test end----------
 
-    divided_text = Tokenizer().tokenize(text)
+    divided_text = Tokenizer().tokenize(divided_text)
     flow = [((str(str(part).split()[0])), (str(str(part).split()[1]).split(',')[0])) for part in divided_text]
     table = flow2table.flow2table(flow)
     flow_ided = [table.index(drop) for drop in flow]
