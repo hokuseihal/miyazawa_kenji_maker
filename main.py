@@ -27,8 +27,8 @@ def miyazawa(usepart=True):
 
     # get models (fit)
     print('main:getting model')
-    part_model = parts.part(table, flow, epoch=2)
-    vocab_model = vocabs.vocab(flow_ided, table, epoch=2)
+    part_model = parts.part(table, flow, epoch=20)
+    vocab_model = vocabs.vocab(flow_ided, table, epoch=120)
     print('main:predicting')
     # predict
     maxlength = vocab_model.max_length

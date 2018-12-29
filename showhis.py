@@ -8,4 +8,4 @@ def showhis(his, title=''):
     plt.xlabel('epoch')
     plt.ylabel('loss and loss_val')
     plt.legend()
-    plt.show()
+    plt.savefig(title+'.png')
