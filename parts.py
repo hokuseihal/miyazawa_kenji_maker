@@ -10,11 +10,13 @@ from showhis import showhis
 
 class part:
 
+
     def __init__(self, table, flow, epoch=60):
         self.epoch = epoch
         self.flow = flow
         self.table = table
         self.max_length = 20
+
         self.step = 1
         self.weightpath = 'weight_parts.h5'
         self.parts = ['フィラー', '副詞', '助動詞', '助詞', '動詞', '名詞', '形容詞', '感動詞', '接続詞', '接頭詞', '記号', '連体詞']
@@ -48,12 +50,14 @@ class part:
         y = np.zeros((len(sentenses), len(self.parts)), dtype=np.bool)
 
         for i, sentense in enumerate(sentenses):
+
             for t, _part in enumerate(sentense):
                 x[i, t, self.part_indices[_part]] = 1
             y[i, self.part_indices[next_parts[i]]] = 1
         (x_train, x_test, y_train, y_test) = train_test_split(x, y)
         his_fit = self.model.fit(x_train, y_train, batch_size=63, epochs=self.epoch, validation_data=(x_test, y_test))
         showhis(his_fit, title='part:loss and validation_loss')
+
         self.model.save_weights(self.weightpath)
         self.accuracy_test()
     def predict(self, id_sentence, n):
@@ -61,6 +65,7 @@ class part:
         # output : a part:string
         xsentence = id_sentence[-self.max_length:]
         return self.indices_part[np.argmax(self.model.predict(self.onehotter(xsentence)))]
+
 
     def onehotter(self, xinlist_onehot):
         x = np.zeros((1, self.max_length, len(self.parts)), dtype=np.bool)

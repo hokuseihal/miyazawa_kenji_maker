@@ -16,9 +16,11 @@ class vocab:
     def __init__(self, flow_ided, table, epoch=60):
         self.epoch = epoch
         self.table = table
+
         self.max_length = 80
+        self.epoch=epoch
         self.weightpath = 'weight_vocabs.h5'
-        self.wordn = max(flow_ided) + 1
+        self.wordn = len(table) + 1
         self.step = 3
         self.sentences = []
         self.nextwords = []
@@ -44,6 +46,7 @@ class vocab:
             for t, word in enumerate(sentence):
                 x[i, t, word] = True
                 y[i, self.nextwords[i]] = True
+
         (x_train, x_test, y_train, y_test) = train_test_split(x, y)
         his_fit = self.model.fit(x_train, y_train, batch_size=63, epochs=self.epoch, validation_data=(x_test, y_test))
         showhis(his_fit, title='vocabs:loss and validation_loss')

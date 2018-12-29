@@ -1,5 +1,3 @@
-import sys
-
 from janome.tokenizer import Tokenizer
 import numpy as np
 import io
@@ -8,6 +6,7 @@ import re
 import parts
 import vocabs
 import flow2table
+
 
 
 def miyazawa(usepart=True):
@@ -29,11 +28,12 @@ def miyazawa(usepart=True):
     print('main:getting model')
     part_model = parts.part(table, flow, epoch=2)
     vocab_model = vocabs.vocab(flow_ided, table, epoch=120)
+
     print('main:predicting')
     # predict
     maxlength = vocab_model.max_length
-    rand = np.random.randint(0, len(flow_ided) - maxlength)
-    sentences = flow_ided[rand:rand + maxlength]
+    rand = np.random.randint(0, len(run_flow_ided) - maxlength)
+    sentences = run_flow_ided[rand:rand + maxlength]
     for i in range(want_length):
         partpredict = part_model.predict(sentences, rand + i)
         vocabpredict = vocab_model.predict(sentences)[0]
@@ -42,6 +42,7 @@ def miyazawa(usepart=True):
                 sentences.append(int(vocabidad))
                 print(table[vocabidad][0], end="")
                 break
+
 
 
 
