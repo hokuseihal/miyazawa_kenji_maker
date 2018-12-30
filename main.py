@@ -33,8 +33,8 @@ def miyazawa(usepart=True):
     print('main:predicting')
     # predict
     maxlength = vocab_model.max_length
-    rand = np.random.randint(0, len(run_flow_ided) - maxlength)
-    sentences = run_flow_ided[rand:rand + maxlength]
+    rand = np.random.randint(0, len(flow_ided) - maxlength)
+    sentences = flow_ided[rand:rand + maxlength]
     for i in range(want_length):
         partpredict = part_model.predict(sentences, rand + i)
         vocabpredict = vocab_model.predict(sentences)[0]
