@@ -19,8 +19,8 @@ def miyazawa(usepart=True):
     text += re.sub(r"<.*?>|（.*?）", "", rawtext)
     # only test end----------
 
-    divided_text = Tokenizer().tokenize(text)
-    flow = [((str(str(part).split()[0])), (str(str(part).split()[1]).split(',')[0])) for part in divided_text]
+    list=['フィラー', '副詞', '助動詞', '助詞', '動詞', '名詞', '形容詞', '感動詞', '接続詞', '接頭詞', '記号', '連体詞']
+    flow = [((str(str(part).split()[0])), (str(str(part).split()[1]).split(',')[0])) for part in divided_text if (str(str(part).split()[1]).split(',')[0]) in list]
     table = flow2table.flow2table(flow)
     flow_ided = [table.index(drop) for drop in flow]
 
