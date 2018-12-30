@@ -25,7 +25,6 @@ def miyazawa(usepart=True):
                     divided_text+=t.tokenize(line)[2:]
     # only test end----------
 
-    divided_text = Tokenizer().tokenize(divided_text)
     flow = [((str(str(part).split()[0])), (str(str(part).split()[1]).split(',')[0])) for part in divided_text]
     table = flow2table.flow2table(flow)
     flow_ided = [table.index(drop) for drop in flow]
@@ -33,7 +32,7 @@ def miyazawa(usepart=True):
     # get models (fit)
     print('main:getting model')
     part_model = parts.part(table, flow, epoch=2)
-    vocab_model = vocabs.vocab(flow_ided, table, epoch=120)
+    vocab_model = vocabs.vocab(flow_ided, table, epoch=2)
     print('main:predicting')
     # predict
     maxlength = vocab_model.max_length
