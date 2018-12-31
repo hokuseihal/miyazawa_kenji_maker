@@ -53,7 +53,7 @@ class part:
             y[i, self.part_indices[next_parts[i]]] = 1
         (x_train, x_test, y_train, y_test) = train_test_split(x, y)
         his_fit = self.model.fit(x_train, y_train, batch_size=63, epochs=self.epoch, validation_data=(x_test, y_test))
-        showhis(his_fit, title='part:loss and validation_loss')
+        showhis(his_fit, title='part:loss_and_validation_loss')
         self.model.save_weights(self.weightpath)
         self.accuracy_test()
     def predict(self, id_sentence, n):
