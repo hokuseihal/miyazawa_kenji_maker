@@ -13,18 +13,18 @@ from sklearn.model_selection import train_test_split
 
 
 class vocab:
-    def __init__(self, flow_ided, table, epoch=60,gen=True):
-        self.batchsize=128
+    def __init__(self, flow_ided, table, epoch=60, gen=True):
+        self.batchsize = 128
         self.epoch = epoch
         self.table = table
         self.max_length = 80
-        self.flow_ided=flow_ided
+        self.flow_ided = flow_ided
         self.weightpath = 'weight_vocabs.h5'
         self.wordn = max(flow_ided) + 1
         self.step = 3
         # build model
         self.model = Sequential()
-        self.model.add(LSTM(self.batchsize, input_shape=(self.max_length, self.wordn)))
+        self.model.add(LSTM(128, input_shape=(self.max_length, self.wordn)))
         self.model.add(Dense(self.wordn, activation='softmax'))
         self.model.compile(loss='categorical_crossentropy', optimizer=RMSprop())
         if os.path.exists(self.weightpath):
@@ -35,7 +35,8 @@ class vocab:
             self.fitvocab()
         elif gen:
             print('vocab GEN fitting............')
-            self.model.fit_generator(self.fitvocab_eng2(),steps_per_epoch=len(self.flow_ided)/self.batchsize,epochs=self.epoch)
+            self.model.fit_generator(self.fitvocab_eng2(), steps_per_epoch=1 + int(
+                (len(self.flow_ided) - self.max_length - self.batchsize) / self.batchsize), epochs=self.epoch)
 
     def fitvocab(self):
         self.sentences = []
@@ -51,22 +52,25 @@ class vocab:
                 y[i, self.nextwords[i]] = True
         (x_train, x_test, y_train, y_test) = train_test_split(x, y)
         his_fit = self.model.fit(x_train, y_train, batch_size=63, epochs=self.epoch, validation_data=(x_test, y_test))
-        showhis(his_fit, title='vocabs:loss_and_validation_loss')
+        showhis(his_fit, title='vocabs:loss and validation_loss')
         self.model.save_weights(self.weightpath)
 
-
     def fitvocab_eng(self):
-        for reti in range(0,len(self.flow_ided)-self.batchsize,self.batchsize):
-            yield self.onehotter(self.flow_ided[reti:reti+self.max_length])[0],self.onehotter([self.flow_ided[reti+self.max_length]])[0]
+        for reti in range(0, len(self.flow_ided) - self.batchsize, self.batchsize):
+            yield self.onehotter(self.flow_ided[reti:reti + self.max_length])[0], \
+                  self.onehotter([self.flow_ided[reti + self.max_length]])[0]
 
     def fitvocab_eng2(self):
-        for reti in range(0,len(self.flow_ided)-self.batchsize-1,self.batchsize):
-            x = np.zeros((self.batchsize, self.max_length, self.wordn), dtype=np.bool)
-            y = np.zeros((self.batchsize, self.wordn), dtype=np.bool)
-            for i in range(self.batchsize):
-                x[i,:,:]=self.onehotter(self.flow_ided[reti+i:reti+i+self.max_length])
-                y[i,:]=self.onehotter([self.flow_ided[reti+self.max_length+i]])
-            yield x,y
+        while True:
+            for reti in range(0, len(self.flow_ided) - self.batchsize - self.max_length, self.batchsize):
+                x = np.zeros((self.batchsize, self.max_length, self.wordn), dtype=np.bool)
+                y = np.zeros((self.batchsize, self.wordn), dtype=np.bool)
+                for i in range(self.batchsize):
+                    x[i, :, :] = self.onehotter(self.flow_ided[reti + i:reti + i + self.max_length])
+                    y[i, :] = self.onehotter([self.flow_ided[reti + self.max_length + i]])
+                print("reti:", reti)
+                yield x, y
+
     def predict(self, sentenses):
         idlist = sentenses[-self.max_length:]
         return (self.model.predict(self.onehotter(idlist)))
