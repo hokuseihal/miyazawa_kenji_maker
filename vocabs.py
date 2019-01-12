@@ -3,13 +3,14 @@ input : dictionary vocab and part
 output : model fitted
 '''
 from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import LSTM
+from keras.layers import Dense,LSTM,Dropout
 from keras.optimizers import RMSprop
 import numpy as np
 import os
 from showhis import showhis
 from sklearn.model_selection import train_test_split
+from keras import regularizers
+from keras.utils import plot_model
 
 
 class vocab:
@@ -29,7 +30,7 @@ class vocab:
             self.nextwords.append(flow_ided[i + self.max_length])
         # build model
         self.model = Sequential()
-        self.model.add(LSTM(128, input_shape=(self.max_length, self.wordn)))
+        self.model.add(LSTM(128, input_shape=(self.max_length, self.wordn),kernel_regularizer=regularizers.l2(0.01),dropout=0.25))
         self.model.add(Dense(self.wordn, activation='softmax'))
         self.model.compile(loss='categorical_crossentropy', optimizer=RMSprop())
         if os.path.exists(self.weightpath):
@@ -38,6 +39,7 @@ class vocab:
         else:
             print('vocab:fitting.................')
             self.fitvocab()
+        plot_model(self.model, to_file='vocabmodel.png')
 
     def fitvocab(self):
         x = np.zeros((len(self.sentences), self.max_length, self.wordn), dtype=np.bool)
