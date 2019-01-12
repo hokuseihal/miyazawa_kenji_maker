@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import os
 from showhis import showhis
+from keras.utils import plot_model
 
 
 class part:
@@ -36,6 +37,7 @@ class part:
         else:
             print('parts:fitting...............')
             self.partfit()
+        plot_model(self.model, to_file='partmodel.png')
 
     def partfit(self):
 
