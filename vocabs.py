@@ -30,7 +30,10 @@ class vocab:
             self.nextwords.append(flow_ided[i + self.max_length])
         # build model
         self.model = Sequential()
-        self.model.add(LSTM(128, input_shape=(self.max_length, self.wordn),kernel_regularizer=regularizers.l2(0.01),dropout=0.25))
+        self.model.add(LSTM(128, input_shape=(self.max_length, self.wordn),kernel_regularizer=regularizers.l2(0.01),dropout=0.25,return_sequences=True))
+        for i in range(2):
+            self.model.add(LSTM(128, kernel_regularizer=regularizers.l2(0.01), dropout=0.25, return_sequences=True))
+        self.model.add(LSTM(128, kernel_regularizer=regularizers.l2(0.01), dropout=0.25))
         self.model.add(Dense(self.wordn, activation='softmax'))
         self.model.compile(loss='categorical_crossentropy', optimizer=RMSprop())
         if os.path.exists(self.weightpath):

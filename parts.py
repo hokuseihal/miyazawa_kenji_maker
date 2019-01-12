@@ -28,7 +28,10 @@ class part:
         # build model
         self.optimizer = RMSprop()
         self.model = Sequential()
-        self.model.add(LSTM(128, input_shape=(self.max_length, len(self.parts))))
+        self.model.add(LSTM(128, input_shape=(self.max_length, len(self.parts)),kernel_regularizer=regularizers.l2(0.01),dropout=0.25,return_sequences=True))
+        for i in range(2):
+            self.model.add(LSTM(128,kernel_regularizer=regularizers.l2(0.01),dropout=0.25,return_sequences=True))
+        self.model.add(LSTM(128,kernel_regularizer=regularizers.l2(0.01),dropout=0.25))
         self.model.add(Dense(128))
         self.model.add(Dense(len(self.parts), activation='softmax'))
         self.model.compile(self.optimizer, loss='categorical_crossentropy')
